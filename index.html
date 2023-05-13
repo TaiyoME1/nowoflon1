@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Taiyo Middle East</title>
+	
+	<link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+
+	
+</head>
+
+<style>
+    input[type=text], select {
+      width: 100%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      display: inline-block;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    
+    input[type=submit] {
+      width: 100%;
+      background-color: #4c4faf;
+      color: white;
+      padding: 14px 20px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    input[type=submit]:hover {
+      background-color: #45a049;
+    }
+    
+    p {
+      border-radius: 5px;
+      background-color: #f2f2f2;
+      padding: 20px;
+    }
+    container {
+  display: grid;
+  grid-template-columns:20% 20% 20%;
+  align-items: center;
+
+    }
+    .container {
+  display: grid;
+  grid-template-columns:20% 20% 20% 20% 20%;
+  align-items: center;
+
+}
+    </style>
+
+
+<body>
+	<header>
+		<img src="https://dl.dropboxusercontent.com/s/iufgdaxcd6wm274/index.jpg?dl=0" alt="Logo" width="200">
+		<h1>How to select ETFE print pattern from Hueck/Nowoflon/Europe foil</h1>
+		<div class="container">
+      <div class="image"> <img src="https://dl.dropboxusercontent.com/s/b2i1tb3drod7wvt/Dots_16mm_20.png?dl=0" alt="ETFE" height="150px"/> </div> 
+      <div class="image"> <img src="https://dl.dropboxusercontent.com/s/6r6zs1k8arbgfu3/Dots4_2mm_25.png?dl=0" alt="ETFE" height="150px"/> </div> 
+     <div class="image"> <img src="https://dl.dropboxusercontent.com/s/uz38ldy27rz1597/Dots110_37.png?dl=0" alt="ETFE." height="150px"/> </div> 
+     <div class="image"> <img src="https://dl.dropboxusercontent.com/s/8eqve6h2rnx4qjj/Dots16mm_50.png?dl=0" alt="ETFE." height="150px"/> </div> 
+     <div class="image"> <img src="https://dl.dropboxusercontent.com/s/pt52jyxsn3efjyr/Dots74_60.png?dl=0" alt="ETFE." height="150px"/> </div> 
+    </div>
+    <div class="container">
+      <div class="image"> <img src="https://dl.dropboxusercontent.com/s/o1txzrqzupqurda/Dots4_2mm_65.png?dl=0" alt="ETFE" height="150px"/> </div> 
+      <div class="image"> <img src="https://dl.dropboxusercontent.com/s/aq0fttvl04jbr8s/Dots_16_70.png?dl=0" alt="ETFE" height="150px"/> </div> 
+     <div class="image"> <img src="https://dl.dropboxusercontent.com/s/chicybjhrj0u7wv/Dots_2_8mm_inverted.png?dl=0" alt="ETFE." height="150px"/> </div> 
+     <div class="image"> <img src="https://dl.dropboxusercontent.com/s/hz3xrxdd8vou2pp/Hexagonal.png?dl=0" alt="ETFE." height="150px"/> </div> 
+     <div class="image"> <img src="https://dl.dropboxusercontent.com/s/aatdhc61ilon9ri/Honeyhive_9_89.png?dl=0" alt="ETFE." height="150px"/> </div> 
+    </div>
+
+	</header>
+
+	 <form onsubmit="return false">
+        <label for="g_value">Max g_value (Range 0.2 to 0.82):</label><br>
+        <input type="text" id="g_value" name="g_value" min="0.2" max="0.67" value=" "><br>
+
+        <select layers="Layers" id="Layers">
+            <option value="1">1 Layer </option>
+            <option value="2">2 Layers</option>
+            <option value="3">3 Layers</option>
+             <option value="4">4 Layers</option>
+            
+        </select>
+
+        <label for="password">password:</label><br>
+        <input type="password" id="password" name="password" ><br>
+
+        <input  py-click="prints()" type="submit" id="btn-form" value="submit">
+
+
+    </form> 
+ 
+  
+
+
+	 <py-config>
+      packages = ["pandas"]
+    </py-config>
+
+	<py-script> 
+
+def prints(*args,**kwargs):
+	import pandas as pd
+	from pyodide.http import open_url
+	from pyscript import Element
+
+	L = int(Element('Layers').value)
+
+	g = float(Element('g_value').value)
+
+	P = str(Element('password').value)
+
+
+	if P == "TME=fast":
+
+
+		pd.set_option('display.max_columns', None)
+		pd.set_option('display.max_rows', None)
+		pd.set_option('display.max_rows', 500)
+		pd.set_option('display.max_columns', 500)
+		pd.set_option('display.width', 1000)
+
+
+		url = 'https://dl.dropboxusercontent.com/s/q5wdv3ec3k5kjj2/prints_nowoflon.csv?dl=0'
+		df = pd.read_csv(open_url(url))
+
+
+
+
+
+		#layers = df['ETFE_system'].unique().tolist()
+		#ink = df['Ink'].unique().tolist()
+		mask = (df["g_value"] <= g) & (df["Layers"] == L)
+
+		result=df[mask]
+		result.set_index("No", inplace=True)
+		result.align(result, join='inner', axis=None, level=None, copy=True, fill_value=None, method=None, limit=None, fill_axis=0, broadcast_axis=None)
+		print(result)
+
+
+
+
+
+
+
+	</py-script>
+</body>
+</html>
